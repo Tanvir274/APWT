@@ -29,6 +29,7 @@ Route::get('/first',function(){return "Hello ,Hou are you??";});
 Route::get('/contact',[PageController::class,'contact']);
 
 Route::get('/service',[PageController::class,'service']);
+Route::get('/team',[PageController::class,'team']);
 
 
 
