@@ -25,4 +25,5 @@ Route::get('/home',[ProductController::class,'Home'])->name('home');
 Route::post('/product/submit',[ProductController::class,'ProductSubmit'])->name('product.submit');
 Route::get('/list',[ProductController::class,'ProductList'])->name('list');
 Route::get('/edit/{id}',[ProductController::class,'ProductEdit'])->name('edit');
+Route::post('/edit/submit',[ProductController::class,'EditSubmit'])->name('product.resubmit');
 

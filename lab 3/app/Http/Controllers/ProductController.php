@@ -43,7 +43,8 @@ class ProductController extends Controller
 
 
         // using class validate methood
-        $this->validate(
+        $this->validate
+        (
             $request,
             [
             'id'=>'required',
@@ -64,14 +65,15 @@ class ProductController extends Controller
         $var->name= $request->name;
         $var->price= $request->price;
         $var->quantity= $request->quantity;
-        $var->description= $request->derscription;
-        //$var=save();
+        $var->description= $request->description;
+        $var->save();
          return "ok";
+
     }
 
     public function ProductList()
     {
-        $products = array();
+        /* $products = array();
         for($i=0;$i<10;$i++)
         {
             $product=array(
@@ -81,12 +83,34 @@ class ProductController extends Controller
 
             );
             $products[]=(object)$product;
-        }
+        } */
+        $products = Product::all();
         return view('pages.plist')->with('products',$products);
     }
     public function ProductEdit(Request $request)
     {
-        return $request->id;
+        $id= $request->id;
+        $oder= product:: where('id',$id)->first(); // single match row result collect
+        //return $oder;
+
+        /*
+        $oder= product:: where('id',$id)->get(); for all row value collect
+        $oder= product:: where('id','>',$id)->get(); $id uper  all value collect
+        */
+        return view('pages.ProductEdit')->with('ProductEdit',$oder);
+
+    }
+    public function EditSubmit(Request $request)
+    {
+        $var= product :: where('id',$request->id)->first();
+        $var->p_id=$request->id;
+        $var->name= $request->name;
+        $var->price= $request->price;
+        $var->quantity= $request->quantity;
+        $var->description= $request->description;
+        $var->save();
+        return  redirect()->route('list');
+
 
     }
 
