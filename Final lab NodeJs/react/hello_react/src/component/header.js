@@ -1,11 +1,16 @@
 import React from 'react'
+import {Link} from 'react-router-dom'
 function header()
 {
     return(
     <div>
-        <a href="">Home</a> &nbsp;&nbsp;
-        <a href="">Profile</a>&nbsp;&nbsp;
-        <a href="">Details</a>
+        <Link to="/">Home</Link> &nbsp;&nbsp;
+        <Link to="/profile">Profile</Link>&nbsp;&nbsp;
+        <a href="/details">Details</a>&nbsp;&nbsp;
+        <Link to="/ColourChange">Colour-Change</Link>&nbsp;&nbsp;
+        <Link to="/effect">Effect-Hook</Link>&nbsp;&nbsp;
+        <Link to="/post">Allpost</Link>&nbsp;&nbsp;
+
 
     </div>
     )

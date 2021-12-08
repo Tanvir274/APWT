@@ -82,7 +82,8 @@ class PatienController extends Controller
         $cabin = cabin::all();
         $lab = labtest::all();
         $medicin=medicin::all();
-        return view('pages.home')->with('doctor',$doctor)->with('cabin',$cabin)->with('lab',$lab)->with('medicin',$medicin)->with('user',$p);
+        return $doctor;
+       // return view('pages.home')->with('doctor',$doctor)->with('cabin',$cabin)->with('lab',$lab)->with('medicin',$medicin)->with('user',$p);
         
     }
 
@@ -240,6 +241,8 @@ class PatienController extends Controller
     {
         $id= $request->id;
         $p= doctor:: where('id',$id)->first();
+        return $p;  
+
         return view('booking.doctor_b')->with('p',$p);
 
     }

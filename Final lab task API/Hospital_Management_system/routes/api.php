@@ -28,7 +28,7 @@ Route::get('/registration',[PatienController::class,'Registration'])->name('regi
 Route::post('/registration/submit',[PatienController::class,'RegistrationSubmit'])->name('registration.submit');
 
 
-Route::get('/home',[PatienController::class,'HomePage'])->middleware('control')->name('home');
+Route::get('/home',[PatienController::class,'HomePage'])->name('home');
 Route::get('/profile',[PatienController::class,'profile'])->middleware('control')->name('profile');
 Route::get('/edit/{id}',[PatienController::class,'EditProfile'])->middleware('control')->name('edit');
 Route::post('/resubmit',[PatienController::class,'UpdateProfile'])->middleware('control')->name('profile.resubmit');
