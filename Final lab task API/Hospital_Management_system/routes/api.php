@@ -21,52 +21,61 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 
-Route::get('/',[PatienController::class,'Login'])->name('login');
+//Route::get('/',[PatienController::class,'Login'])->name('login');
 Route::post('/check',[PatienController::class,'LoginCheck'])->name('login.check');
 
-Route::get('/registration',[PatienController::class,'Registration'])->name('registration');
-Route::post('/registration/submit',[PatienController::class,'RegistrationSubmit'])->name('registration.submit');
+//Route::get('/registration',[PatienController::class,'Registration'])->name('registration');
+Route::post('/registration/submit',[PatienController::class,'RegistrationSubmit']);
 
 
-Route::get('/home',[PatienController::class,'HomePage'])->name('home');
-Route::get('/profile',[PatienController::class,'profile'])->middleware('control')->name('profile');
-Route::get('/edit/{id}',[PatienController::class,'EditProfile'])->middleware('control')->name('edit');
-Route::post('/resubmit',[PatienController::class,'UpdateProfile'])->middleware('control')->name('profile.resubmit');
+Route::get('/home',[PatienController::class,'HomePage'])->middleware('control');
+Route::post('/profile',[PatienController::class,'profile'])->middleware('control');
+//Route::get('/edit/{id}',[PatienController::class,'EditProfile'])->middleware('control')->name('edit');
+Route::post('/resubmit',[PatienController::class,'UpdateProfile'])->middleware('control');
 
 
-Route::get('/recovery',[PatienController::class,'Recovery'])->middleware('control')->name('recovery');
-Route::post('/recovery/submit',[PatienController::class,'RecoverySubmit'])->middleware('control')->name('recovery.submit');
+//Route::get('/recovery',[PatienController::class,'Recovery'])->middleware('control')->name('recovery');
+Route::post('/recovery/submit',[PatienController::class,'RecoverySubmit']);//->middleware('control')->name('recovery.submit');
 
 
-Route::get('/logout',[PatienController::class,'Logout'])->middleware('control')->name('logout');
+Route::get('/logout',[PatienController::class,'Logout'])->middleware('control');
 
 
 
-Route::get('/comment',[PatienController::class,'Comment'])->middleware('control')->name('comment');
-Route::post('/comment/submit',[PatienController::class,'CommentSubmit'])->middleware('control')->name('comment.submit');
+//Route::get('/comment',[PatienController::class,'Comment'])->middleware('control')->name('comment');
+Route::post('/comment/submit',[PatienController::class,'CommentSubmit'])->middleware('control');
 
 
-Route::get('/admin',[PatienController::class,'Admin'])->middleware('control')->name('admin');
+//Route::get('/admin',[PatienController::class,'Admin']);//->middleware('control')->name('admin');
 
 
 
 //pataint process:
 
 //Doctor
-Route::get('/appointment/{id}',[PatienController::class,'Appointment'])->middleware('control')->name('appointment');
-Route::post('/appointment/submit',[PatienController::class,'AppointmentSubmit'])->middleware('control')->name('appointment.submit');
+//Route::get('/appointment/{id}',[PatienController::class,'Appointment'])->middleware('control')->name('appointment');
+Route::post('/appointment/submit',[PatienController::class,'AppointmentSubmit'])->middleware('control');
 
 //Test
-Route::get('/test/{id}',[PatienController::class,'Test'])->middleware('control')->name('test');
-Route::post('/test/submit',[PatienController::class,'TestSubmit'])->middleware('control')->name('test.submit');
+//Route::get('/test/{id}',[PatienController::class,'Test'])->middleware('control')->name('test');
+Route::post('/test/submit',[PatienController::class,'TestSubmit'])->middleware('control');
 
 //cabin
-Route::get('/cabin/{id}',[PatienController::class,'Cabin'])->middleware('control')->name('cabin');
-Route::post('/cabin/submit',[PatienController::class,'CabinSubmit'])->middleware('control')->name('cabin.submit');
+//Route::get('/cabin/{id}',[PatienController::class,'Cabin'])->middleware('control')->name('cabin');
+Route::post('/cabin/submit',[PatienController::class,'CabinSubmit'])->middleware('control');
 
 
 //Histry
-Route::get('/details',[PatienController::class,'Details'])->middleware('control')->name('details');
+Route::post('/details',[PatienController::class,'Details'])->middleware('control');
+
+// Review
+Route::post('/doctor_review',[PatienController::class,'doctor_review'])->middleware('control');
+Route::post('/labtest_review',[PatienController::class,'labtest_review'])->middleware('control');
+Route::post('/cabin_review',[PatienController::class,'cabin_review'])->middleware('control');
+
+
+Route::get('/review',[PatienController::class,'allReview'])->middleware('control');
+
 
 
 

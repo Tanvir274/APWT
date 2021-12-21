@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use App\Models\token;
 
 class control
 {
@@ -16,13 +17,15 @@ class control
      */
     public function handle(Request $request, Closure $next)
     {
-        if($request->session()->has('user')){
+        $token = $request->header("Authorization");
+
+        $check_token = token::where('token',$token)->where('expired_at',NULL)->first();
+        if($check_token){
 
             return $next($request);
 
         }
-
-        return redirect()->route('login');
-
+        else 
+        return response("Invalid token",401);
     }
 }

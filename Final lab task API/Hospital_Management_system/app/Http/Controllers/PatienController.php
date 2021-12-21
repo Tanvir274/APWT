@@ -12,26 +12,45 @@ use App\Models\medicin;
 use App\Models\Appointment;
 use App\Models\booking_cabin;
 use App\Models\booking_labtest;
+use App\Models\review_doctor;
+use App\Models\review_labtest;
+use App\Models\review_cabin;
+use App\Models\token;
+use Illuminate\Support\Str; //for random value
+use DateTime;
 
 
 class PatienController extends Controller
 {
+    
     // home page
-    public function Login()
+    /*public function Login()
     {
         return view('pages.login');
-    }
+    }*/
     public function LoginCheck(Request $request)
     {
+        
         $p=pataint::where('username',$request->username)
         ->where('password',$request->password)
         ->first();
-       if($p)
+        if($p)
         {
-            session()->put('user',$p);
-            return redirect()->route('home');
+            $api_token=Str::random(64);
+            $token = new token();
+            $token->username = $p->username;
+            $token->token = $api_token;
+            $token->created_at=New DateTime();
+            $token->save();
+            return $token;
+
+            //session()->put('user',$p);
+            //return redirect()->route('home')
+            
         }
-        return redirect()->route('login');
+        return "Not found";
+        //return redirect()->route('login');
+        
         
     }
 
@@ -42,26 +61,7 @@ class PatienController extends Controller
     public function RegistrationSubmit(Request $request)
     {
         
-        $this->validate
-        (
-            $request,
-            [
-            'name'=>'required | min: 3',
-            'username'=>'required | min: 3 ' ,
-            'password'=>'required| min: 3',
-            'phone'=>'required |regex:/^([0-9\s\-\+\(\)]*)$/',
-            'email'=>'required| email|unique:pataint',
-            'group'=>'required',
-            'dob'=>'required',
-            'address'=>'required | min: 5'
-
-           ],
-           [
-            'name.required'=>'put your name',
-             'name.min'=>'name must be gether than  2 charecter'
-
-           ]
-        );
+        
         $var=new pataint();
         $var->name=$request->name;
         $var->username= $request->username;
@@ -72,7 +72,7 @@ class PatienController extends Controller
         $var->dob= $request->dob;
         $var->address= $request->address;
         $var->save();
-         return redirect()-> route('login');
+         return  $var;//redirect()-> route('login');
 
     }
     public function HomePage()
@@ -82,30 +82,26 @@ class PatienController extends Controller
         $cabin = cabin::all();
         $lab = labtest::all();
         $medicin=medicin::all();
-        return $doctor;
-       // return view('pages.home')->with('doctor',$doctor)->with('cabin',$cabin)->with('lab',$lab)->with('medicin',$medicin)->with('user',$p);
-        
+        $home = array($doctor, $cabin, $lab,$medicin);
+        return $home;
     }
 
     //Profile
 
-    public function Profile()
+    public function Profile(Request $request)
     {
-       
-        $p = session('user');
-
-        $pc= pataint :: where('id',$p->id)->first();
-
-         
         
-        return view('pages.profile')->with('profile',$pc);
+
+        $pc= pataint :: where('username',$request->username)->first();
+
+        return $pc;
     }
 
 
 
 
     // update profile
-    public function EditProfile(Request $request)
+    /*public function EditProfile(Request $request)
     {
        
        
@@ -113,21 +109,10 @@ class PatienController extends Controller
         $p= pataint:: where('id',$id)->first();
         
         return view('pages.ProfileEdit')->with('p',$p); 
-    }
+    }*/
     public function UpdateProfile(Request $request)
     {
-        $this->validate
-        (
-            $request,
-            [
-            'name'=>'required | min: 3',
-            'password'=>'required| min: 3',
-            'phone'=>'required |regex:/^([0-9\s\-\+\(\)]*)$/',
-            'email'=>'required| email',
-            'address'=>'required | min: 5'
-
-           ]
-        );
+        
         
         
         $var= pataint :: where('id',$request->primary_id)->first();
@@ -141,32 +126,21 @@ class PatienController extends Controller
         $var->dob= $var->dob;
         $var->address= $request->address;
         $var->save();
-        return  redirect()->route('profile'); 
+        return $var; //redirect()->route('profile'); 
     }
 
     // id recovery
 
-    public function Recovery()
+    /*public function Recovery()
     {
         return view('pages.pass_recovery');
-    }
+    }*/
     public function RecoverySubmit(Request $request)
     {
-        $this->validate
-        (
-            $request,
-            [
-            'username'=>'required | min: 3',
-            'password'=>'required| min: 3'
-
-           ]
-        );
+        
 
         
-        $var= pataint :: where('username',$request->username)->first();
-
-        if($var)
-        {
+        $var= pataint :: where('username',$request->username)->where('email',$request->email)->first();
         $var->name=$var->name;
         $var->username= $var->username;
         $var->password= $request->password;
@@ -176,10 +150,8 @@ class PatienController extends Controller
         $var->dob= $var->dob;
         $var->address= $var->address;
         $var->save();
-        return  redirect()->route('login'); 
-        }
-        else
-        return "<h1>Enter valid Username</h1>";
+        return  $var;
+       
         
     }
 
@@ -195,49 +167,36 @@ class PatienController extends Controller
 
     //Comment & Rating
 
-    public function Comment()
+    /*public function Comment()
     {
         return view ('pages.satisfaction');
-    }
+    }*/
     public function CommentSubmit(Request $request)
     {
-        $this->validate
-        (
-            $request,
-            [
-            'comment'=>'required | min: 3',
-            'ratting'=>'required'
-
-           ]
-        );
-
-        $p = session('user');
-
-        
+        $p= pataint :: where('username',$request->username)->first();
         $var= new comment();
         $var->name=$p->name;
-        $var->username= $p->username;
-        
+        $var->username= $p->username;   
         $var->comment= $request->comment;
-        $var->ratting= $request->ratting;
+        $var->ratting= $request->rating;
         $var->save();
-        return redirect()->route('home'); 
+        return $var;//redirect()->route('home'); 
 
     }
 
 
 
-    public function Admin()
+    /*public function Admin()
     {
         return view('pages.admin');
-    }
+    }*
 
 
 
     //pataint process:
 
     //Doctor:
-    public function Appointment(Request $request)
+   /* public function Appointment(Request $request)
     {
         $id= $request->id;
         $p= doctor:: where('id',$id)->first();
@@ -245,20 +204,13 @@ class PatienController extends Controller
 
         return view('booking.doctor_b')->with('p',$p);
 
-    }
+    }*/
 
     public function AppointmentSubmit(Request $request)
     {
-        $this->validate
-        (
-            $request,
-            [
-            'time'=>'required ',
-            'date'=>'required'
-
-           ]
-        );
-        $u=session('user');
+        
+        
+        $u= pataint :: where('username',$request->username)->first();
         $d= doctor :: where('id',$request->primary_id)->first();
 
         $var=new Appointment();
@@ -268,7 +220,7 @@ class PatienController extends Controller
         $var->app_time= $request->time;
         $var->app_date= $request->date;
         $var->save();
-        return  redirect()->route('home');
+        return $var; //redirect()->route('home');
 
         
 
@@ -276,26 +228,18 @@ class PatienController extends Controller
 
     //Test
 
-    public function Test(Request $request)
+    /*public function Test(Request $request)
     {
         $id= $request->id;
         $p= labtest:: where('id',$id)->first();
         return view('booking.test_b')->with('p',$p);
 
-    }
+    }*/
 
     public function TestSubmit(Request $request)
     {
-        $this->validate
-        (
-            $request,
-            [
-            'time'=>'required ',
-            'date'=>'required'
-
-           ]
-        );
-        $u=session('user');
+        
+        $u= pataint :: where('username',$request->username)->first();
         $l= labtest :: where('id',$request->primary_id)->first();
 
         $var=new booking_labtest();
@@ -305,32 +249,25 @@ class PatienController extends Controller
         $var->time= $request->time;
         $var->date= $request->date;
         $var->save();
-        return  redirect()->route('home');
+        return $var;  //redirect()->route('home');
 
     }
 
     //Cabin
 
-    public function Cabin(Request $request)
+   /* public function Cabin(Request $request)
     {
         $id= $request->id;
         $p= cabin:: where('id',$id)->first();
         return view('booking.cabin_b')->with('p',$p);
 
-    }
+    }*/
 
     public function CabinSubmit(Request $request)
     {
         
-        $this->validate
-        (
-            $request,
-            [
-            'date'=>'required'
-
-           ]
-        );
-        $u=session('user');
+        
+        $u= pataint :: where('username',$request->username)->first();
         $c= cabin :: where('id',$request->primary_id)->first();
 
         $var=new booking_cabin();
@@ -343,20 +280,81 @@ class PatienController extends Controller
         $c->cabin_no=$c->cabin_no;
         $c->slot="booked";
         $c->save();
-        return  redirect()->route('home');
+        return  $var;//redirect()->route('home');
 
     }
 
 
-    public function Details()
+    public function Details(Request $request)
     {
-        $p=session('user');
-        $a = appointment::all();
-        $c = booking_cabin::all();
-        $lab = booking_labtest::all();
-        $medicin=medicin::all();
-        return view('booking.history')->with('user',$p)->with('appointment',$a)->with('cabin',$c)->with('lab',$lab);
+        $appointment = appointment::where('pataint_username',$request->username)->get();
+        $cabin = booking_cabin::where('pataint_username',$request->username)->get();
+        $labtest = booking_labtest::where('pataint_username',$request->username)->get();
+        $home = array($appointment, $cabin, $labtest);
+        return $home;
         
+    }
+
+    //Review
+    public function doctor_review(Request $request)
+    {
+        $u=pataint :: where('username',$request->username)->first();
+        $d= doctor :: where('id',$request->primary_id)->first();
+
+        $var=new review_doctor();
+        $var->doctor_id=$d->id;
+        $var->doctor_name= $d->doc_name;
+        $var->pataint_name= $u->name;
+        $var->pataint_username= $u->username;
+        $var->comment= $request->comment;
+        $var->rating= $request->rating;
+        $var->save();
+        return $var;
+        
+        
+
+    }
+    public function labtest_review(Request $request)
+    {
+        $u= pataint :: where('username',$request->username)->first();
+        $l= labtest :: where('id',$request->primary_id)->first();
+
+        $var=new review_labtest();
+        $var->labtest_id=$l->id;
+        $var->labtest_name= $l->type;
+        $var->pataint_name= $u->name;
+        $var->pataint_username= $u->username;
+        $var->comment= $request->comment;
+        $var->rating= $request->rating;
+        $var->save();
+        return $var;
+
+    }
+    public function cabin_review(Request $request)
+    {
+        $u= pataint :: where('username',$request->username)->first();
+        $c= cabin :: where('id',$request->primary_id)->first();
+
+        $var=new review_cabin();
+        $var->cabin_id=$c->id;
+        $var->cabin_name= $c->cabin_no;
+        $var->pataint_name= $u->name;
+        $var->pataint_username= $u->username;
+        $var->comment= $request->comment;
+        $var->rating= $request->rating;
+        $var->save();
+        return $var;
+
+    }
+
+    public function allReview()
+    {
+        $appointment = review_doctor::all();
+        $cabin = review_cabin::all();
+        $labtest = review_labtest::all();
+        $hospital= comment::all();
+        $review = array($appointment, $cabin, $labtest,$hospital);
+        return $review;
 
     }
    
